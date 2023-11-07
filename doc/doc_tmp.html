@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>doc.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="%D0%B4%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F-%D0%B4%D0%BB%D1%8F-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0-axi4-lite---apb4-bridge">Документация для проекта AXI4-Lite - APB4 bridge</h1>
+<h2 id="%D0%B2%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5">Введение</h2>
+<p>Мост AXI4-Lite и APB - это компонент, который выполняет преобразование операций данных и команд между двумя разными интерфейсами. Он работает как ведомое устройство на интерфейсе AXI4-Lite и как ведущее устройство на интерфейсе APB.</p>
+<p>Главная задача моста AXI-APB заключается в обеспечении связи между периферийными устройствами, подключенными к интерфейсу APB, и основными устройствами, подключенными к интерфейсу AXI.</p>
+<h2 id="%D0%BE%D1%81%D0%BD%D0%BE%D0%B2%D0%BD%D1%8B%D0%B5-%D1%85%D0%B0%D1%80%D0%B0%D0%BA%D1%82%D0%B5%D1%80%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D0%B8">Основные характеристики</h2>
+<ul>
+<li>Поддержка двунаправленной передачи данных между компонентами СнК</li>
+<li>Интерфейс AXI основан на спецификации AXI4-Lite.</li>
+<li>Интерфейс APB основан на спецификации APB4.</li>
+<li>Поддержка шин данных разной ширины.</li>
+<li>Не используются сигналы APB: PAUSER, PWUSER, PRUSER, PBUSER</li>
+<li>Работа осуществляется на одном тактовом сигнале</li>
+</ul>
+<h2 id="%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%B8-%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0">Состав и структура</h2>
+<p><img src="file:///workspaces/apb-axi4lite_bridge/doc/struct.jpg" alt="alt"></p>
+<h2 id="%D0%B2%D0%BD%D0%B5%D1%88%D0%BD%D0%B8%D0%B5-%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B">Внешние интерфейсы</h2>
+<p>В этом проекте используются интерфейсы APB4 и AXI4-Lite</p>
+<h3 id="axi">AXI:</h3>
+<table>
+<thead>
+<tr>
+<th>Название сигнала</th>
+<th>Направление</th>
+<th>Разрядность</th>
+<th>Синхронность</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AWADDR</td>
+<td>Input</td>
+<td>AW</td>
+<td>асинхронный</td>
+<td>Используется для передачи адреса при операции записи</td>
+</tr>
+<tr>
+<td>AWPROT</td>
+<td>Input</td>
+<td>3</td>
+<td>асинхронный</td>
+<td>Oпределяет уровень защиты при операции записи</td>
+</tr>
+<tr>
+<td>AWVALID</td>
+<td>Input</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что сигналы AWADDR и AWPROT действительны</td>
+</tr>
+<tr>
+<td>AWREADY</td>
+<td>Output</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что слейв готов принимать адресные запросы на запись</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>WDATA</td>
+<td>Input</td>
+<td>DW</td>
+<td>асинхронный</td>
+<td>Шина данных, используется для передачи данных при операции записи</td>
+</tr>
+<tr>
+<td>WSTRB</td>
+<td>Input</td>
+<td>DW/8</td>
+<td>асинхронный</td>
+<td>Маска, указывающая, какие байты данных из WDATA действительны</td>
+</tr>
+<tr>
+<td>WVALID</td>
+<td>Input</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что данные и маска WDATA и WSTRB действительны</td>
+</tr>
+<tr>
+<td>WREADY</td>
+<td>Output</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что слейв готов принимать данные для операции записи</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BRESP</td>
+<td>Output</td>
+<td>2</td>
+<td>асинхронный</td>
+<td>2-битный сигнал, указывающий результат операции записи</td>
+</tr>
+<tr>
+<td>BVALID</td>
+<td>Output</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что информация на сигнале BRESP действительна</td>
+</tr>
+<tr>
+<td>BREADY</td>
+<td>Input</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что мастер готов принимать ответы на операции записи</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ARADDR</td>
+<td>Input</td>
+<td>AR</td>
+<td>асинхронный</td>
+<td>Сигнал, используется для передачи адреса при операции чтения</td>
+</tr>
+<tr>
+<td>ARPROT</td>
+<td>Input</td>
+<td>3</td>
+<td>асинхронный</td>
+<td>Характеристика входа или выхода: 3-битный сигнал, определяет уровень защиты при операции чтения</td>
+</tr>
+<tr>
+<td>ARVALID</td>
+<td>Input</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что сигналы ARADDR и ARPROT действительны</td>
+</tr>
+<tr>
+<td>ARREADY</td>
+<td>Output</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что слейв готов принимать адресные запросы на чтение</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RDATA</td>
+<td>Output</td>
+<td>DR</td>
+<td>асинхронный</td>
+<td>Шина данных, используется для передачи данных при операции чтения</td>
+</tr>
+<tr>
+<td>RRESP</td>
+<td>Output</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>2-битный сигнал, указывающий результат операции чтения</td>
+</tr>
+<tr>
+<td>RVALID</td>
+<td>Output</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что данные на сигнале RDATA и значение RRESP действительны</td>
+</tr>
+<tr>
+<td>RREADY</td>
+<td>Input</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий, что мастер готов принимать данные, возвращаемые операцией чтения</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>AW - параметр, определяющий ширину сигнала адреса в режиме записи</li>
+<li>DW - параметр, определяющий ширину сигнала данных в режиме записи</li>
+<li>AR - параметр, определяющий ширину сигнала адреса в режиме чтения</li>
+<li>DR - параметр, определяющий ширину сигнала данных в режими чтения</li>
+</ul>
+<h3 id="apb">APB:</h3>
+<table>
+<thead>
+<tr>
+<th>Название сигнала</th>
+<th>Направление</th>
+<th>Разрядность</th>
+<th>Синхронность</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PSELx</td>
+<td>Output</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, который показывает, что конкретный исполнитель выбран и требуется транзакция</td>
+</tr>
+<tr>
+<td>PENABLE</td>
+<td>Output</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Разрешение возможности транзакции</td>
+</tr>
+<tr>
+<td>PPROT</td>
+<td>Output</td>
+<td>3</td>
+<td>асинхронный</td>
+<td>Сигнал доступа(защиты)</td>
+</tr>
+<tr>
+<td>PADDR</td>
+<td>Output</td>
+<td>ASIZE</td>
+<td>асинхронный</td>
+<td>Шина адреса транзакции</td>
+</tr>
+<tr>
+<td>PWRITE</td>
+<td>Output</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Выбор записи или чтения</td>
+</tr>
+<tr>
+<td>PWDATA</td>
+<td>Output</td>
+<td>DW</td>
+<td>асинхронный</td>
+<td>Шина данных для записи</td>
+</tr>
+<tr>
+<td>PSTRB</td>
+<td>Output</td>
+<td>DW/8</td>
+<td>асинхронный</td>
+<td>Сигнал, который указывает какой байт PWDATA будет записываться</td>
+</tr>
+<tr>
+<td>PREADY</td>
+<td>Input</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Готовность slave совершать новую транзакцию</td>
+</tr>
+<tr>
+<td>PRDATA</td>
+<td>Input</td>
+<td>DR</td>
+<td>асинхронный</td>
+<td>Шина данных для чтения</td>
+</tr>
+<tr>
+<td>PSLVERR</td>
+<td>Input</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Сигнал, указывающий на ошибку передачи данных</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ASIZE - параметр ширины сигнала адреса</li>
+<li>DW - параметр ширины данных при записи</li>
+<li>DR - параметр ширины данных при чтении</li>
+</ul>
+<h2 id="%D1%81%D0%B8%D0%BD%D1%85%D1%80%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F-%D0%B8-%D1%81%D0%B1%D1%80%D0%BE%D1%81">Синхронизация и сброс</h2>
+<table>
+<thead>
+<tr>
+<th>Название сигнала</th>
+<th>Направление</th>
+<th>Ширина</th>
+<th>Синхронность</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACLK</td>
+<td>input</td>
+<td>1</td>
+<td>синхронный</td>
+<td>Системная тактовая частота</td>
+</tr>
+<tr>
+<td>ARESETn</td>
+<td>input</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Асинхронный сброс с активным низким уровнем</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Название сигнала</th>
+<th>Направление</th>
+<th>Ширина</th>
+<th>Синхронность</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PCLK</td>
+<td>input</td>
+<td>1</td>
+<td>синхронный</td>
+<td>Системная тактовая частота интерфейса APB</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Название сигнала</th>
+<th>Направление</th>
+<th>Ширина</th>
+<th>Синхронность</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PRESET</td>
+<td>input</td>
+<td>1</td>
+<td>асинхронный</td>
+<td>Асинхронный сброс с активным низким уровнем интерфейса APB</td>
+</tr>
+</tbody>
+</table>
+<h2 id="%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5-%D0%BE%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D0%B5">Функциональное описание</h2>
+<p>Работа моста будет происходить посредством модуля контроллера - конечного автомата.Ниже представлены стадии FSM.</p>
+<ol>
+<li>IDLE - состояние моста по умолчанию, происходит переход в следующее состояние по готовности транзакции, если handshake активен по записи или чтению.</li>
+<li>DECODE - состояние настройки, когда запрашивается транзакция с AXI-мастера, в этом состоянии устанавливаются необходимые сигналы для передачи данных read или write. Если error неактивен, то на следующий такт происходит переход в следующее состояние, если error активен, то перехода нет.</li>
+<li>RUN - состояние происходящей транзакции, все сигналы уже установлены, если транзакция завершается, то автомат переходит в исходное состояние IDLE, если транзакция активна, то автомат возвращается в состояние DECODE.</li>
+</ol>
+<p><img src="file:///workspaces/apb-axi4lite_bridge/doc/fsm.jpg" alt="alt"></p>
+<!--
+### AXI4-Lite
+Для интерфейса AXI4-Lite состояния будут следующие:
+   1. IDLE - состояние интерфейса по умолчанию, без транзакции
+### APB
+Для интерфейса APB состояния будут следующие:
+  1. IDLE - состояние интерфейса по умолчанию, без транзакции
+  2. SETUP - когда требуется транзакция, интерфейс переходит в состояние SETUP, в котором активен
+сигнал Psel. Интерфейс остается в состоянии SETUP только в течение одного такта и всегда переходит в состояние ACCESS при следующем нарастании тактового импульса.
+  1. ACCESS - Разрешающий сигнал, PENABLE, утверждается в состоянии ACCESS. 
+Выход из состояния ACCESS контролируется сигналом PENABLE от завершителя. Если значение PREADY на низком уровне, то интерфейс остается в состоянии ACCESS. Если PREADY становится активным и транзакция еще происходит (PSEL = 1), то автомат переходит в режим SETUP. Если же PREADY активен, но транзакции больше нет (PSEL = 0), то автомат переходит в состояние ожидания IDLE.
+-->
+<h2 id="%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%8F-%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D0%B9">История версий</h2>
+<p>v.01</p>
+
+</body>
+</html>
