@@ -26,14 +26,14 @@ interface apb
         modport slaveAPB
         (
             input pclk, presetn,
-            input pwrite, pstrb, paddr, pwdata,
+            input pselx,penable,pprot,paddr,pwrite,pwdata,pstrb,
             output pready, prdata, pslverr
         );
 
         modport masterAPB
         (
             input pclk, presetn,
-            input pprot, pselx,peneable,pwrite, pstrb,paddr,pwdata,
-            output prdata, pready, pslverr
+            input prdata, pready, pslverr,
+            output pselx,penable,pprot,paddr,pwrite,pwdata,pstrb
         );
 endinterface
