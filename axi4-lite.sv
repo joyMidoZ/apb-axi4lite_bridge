@@ -4,29 +4,29 @@ interface axi4_Lite
         input aclk, input aresetn
     );
 
-    logic [addrWidth-1:0] awaddr;
-    logic [2:0] awprot;
-    logic awvalid;
-    logic awready;
+    logic [addrWidth-1:0] awaddr; //in
+    logic [2:0] awprot; //in
+    logic awvalid;  //in
+    logic awready;  //out
 
-    logic [dataWidth-1:0] wdata;
-    logic [dataWidth/8 - 1:0] wstrb;
-    logic wvalid;
-    logic wready;
+    logic [dataWidth-1:0] wdata;    //in
+    logic [dataWidth/8 - 1:0] wstrb;    //in
+    logic wvalid;   //in
+    logic wready;   //out
 
-    logic [1:0] bresp;
-    logic bvalid;
-    logic bready;
+    logic [1:0] bresp;  //out
+    logic bvalid;   //out
+    logic bready;   //in
 
-    logic [addrWidth-1:0] araddr;
-    logic [2:0]arprot;
-    logic arvalid;
-    logic arready;
+    logic [addrWidth-1:0] araddr;   //in
+    logic [2:0]arprot;  //in
+    logic arvalid;  //in
+    logic arready;  //out
 
-    logic [dataWidth-1:0] rdata;
-    logic [1:0] rresp;
-    logic rvalid;
-    logic rready;
+    logic [dataWidth-1:0] rdata;    //out
+    logic [1:0] rresp;  //out
+    logic rvalid;   //out
+    logic rready;   //in
     
     modport axiSlave
     (
