@@ -13,6 +13,8 @@ interface apb
         logic pready;
         logic [dataWidth - 1:0] prdata;
         logic pslverr;
+        
+        
 
         modport slaveAPB
         (
