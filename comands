@@ -1,0 +1,51 @@
+add_force {/tb_axi4Lite/axi_dut/axiS/awaddr} -radix hex {a 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiS/awvalid} -radix hex {1 0ns}
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiM/awreadyM} -radix hex {1 0ns}
+run 5 ns
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiS/awvalid} -radix hex {0 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiM/awreadyM} -radix hex {0 0ns}
+run 5 ns
+run 5 ns
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiS/wdata} -radix hex {f 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiS/wvalid} -radix hex {1 0ns}
+run 5 ns
+run 5 ns
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiM/wreadyM} -radix hex {1 0ns}
+run 5 ns
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiS/wvalid} -radix hex {0 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiM/wreadyM} -radix hex {0 0ns}
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiM/bvalidM} -radix hex {1 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiM/brespM} -radix hex {0 0ns}
+run 5 ns
+run 5 ns
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiS/bready} -radix hex {1 0ns}
+run 5 ns
+run 5 ns
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiS/bready} -radix hex {0 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiM/bvalidM} -radix hex {0 0ns}
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns
+run 5 ns

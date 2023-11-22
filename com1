@@ -51,3 +51,20 @@
         end
     end
     */
+
+
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiS/awvalid} -radix hex {1 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiS/awaddr} -radix hex {a 0ns}
+run 10 ns
+run 10 ns
+add_force {/tb_axi4Lite/axi_dut/axiM/awreadyM} -radix hex {1 0ns}
+run 10 ns
+add_force {/tb_axi4Lite/axi_dut/axiS/awvalid} -radix hex {0 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiS/awaddr} -radix hex {b 0ns}
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns

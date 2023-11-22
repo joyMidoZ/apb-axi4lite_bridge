@@ -23,7 +23,7 @@ typedef enum logic [2:0] { IDLE, SETUP_W, SETUP_R, ACCESS_W, ACCESS_R,
         end
     end
 
-
+// baldwin,sugugeto
     always_comb begin
         case (state)
             IDLE:begin
