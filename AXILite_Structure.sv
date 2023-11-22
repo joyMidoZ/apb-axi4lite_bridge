@@ -2,7 +2,7 @@ module  AXILite_Structure #(parameter dataWidth = 32, addrWidth = 32)
 (
     input clk, rst, 
     axi4_Lite.axiSlave axiS,
-    input awreadyM,wreadyM,arreadyM,bvalidM,rreadyM,
+    input awreadyM,wreadyM,arreadyM,bvalidM,rvalidM,
     input [1:0] brespM,
     input [dataWidth-1:0] rdataM,
     input [1:0] rrespM,
@@ -50,15 +50,15 @@ module  AXILite_Structure #(parameter dataWidth = 32, addrWidth = 32)
 
     always_ff @(posedge axiS.aclk or negedge axiS.aresetn) begin
         if(~axiS.aresetn)begin
-            awaddrM <= x;
-            awprotM <= x;
-            araddrM <= x;
-            arprotM <= x;
-            wdataM  <= x;
-            wstrbM  <= x;
-            axiS.bresp <= x;
-            axiS.rresp <= x;
-            axiS.rdata <= x;
+            awaddrM <= {addrWidth{1'bx}};
+            awprotM <= {3{1'bx}};
+            araddrM <= {addrWidth{1'bx}};
+            arprotM <= {3{1'bx}};
+            wdataM  <= {dataWidth{1'bx}};
+            wstrbM  <= {dataWidth/8{1'bx}};
+            axiS.bresp <= {2{1'bx}};
+            axiS.rresp <= {2{1'bx}};
+            axiS.rdata <= {dataWidth{1'bx}};
         end
         else begin
             case (state)
@@ -92,4 +92,10 @@ module  AXILite_Structure #(parameter dataWidth = 32, addrWidth = 32)
             endcase
         end
     end
+
+    assign  axiS.awready = awreadyM;
+    assign  axiS.wready = wreadyM;
+    assign  axiS.bvalid = bvalidM;
+    assign  axiS.arready = arreadyM;
+    assign  axiS.rvalid = rvalidM;
 endmodule
