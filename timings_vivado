@@ -1,0 +1,70 @@
+ /*
+    // IDLE 
+    always_ff @(posedge axiS.aclk or negedge axiS.aresetn) begin
+        if(state == IDLE) begin
+            apbM.pselx <= 0;
+        end
+    end
+
+    //adress write SETUP_W
+    always_ff @(posedge axiS.aclk or negedge axiS.aresetn) begin
+        if(state == SETUP_W) begin
+            apbM.paddr <= axiS.awaddr;
+            apbM.pprot <= axiS.awprot;
+            apbM.pwrite <= 1;
+            apbM.pselx <= 1;
+            apbM.penable <= 0;
+
+            axiS.awready <= 1;
+        end
+    end
+
+    // data write ACCESS_W
+    always_ff @(posedge axiS.aclk or negedge axiS.aresetn) begin
+        if(state == ACCESS_W) begin
+            apbM.pwdata <= axiS.wdata;
+            apbM.pstrb <= axiS.wstrb;
+            apbM.penable <= 1;
+            apbM.pwrite <= 1;
+            axiS.bresp <= 1; //точно не помню, может не 1
+        end
+    end
+
+    // addr read SETUP_R
+    always_ff @(posedge axiS.aclk or negedge axiS.aresetn) begin
+        if(state == SETUP_R) begin
+            apbM.paddr <= axiS.araddr;
+            apbM.pprot <= axiS.arprot;
+            apbM.pwrite <= 0;
+            apbM.pselx <= 1;
+            apbM.penable <= 0;
+        end
+    end
+
+    // data read ACCESS_R
+    always_ff @(posedge axiS.aclk or negedge axiS.aresetn) begin
+        if(state == ACCESS_R) begin
+            apbM.pwrite <= 0;
+            axiS.rdata <= apbM.prdata;
+            apbM.penable <= 1;
+            axiS.rresp <= 1; // точно не помню, может не 1
+        end
+    end
+    */
+
+
+run 5 ns
+add_force {/tb_axi4Lite/axi_dut/axiS/awvalid} -radix hex {1 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiS/awaddr} -radix hex {a 0ns}
+run 10 ns
+run 10 ns
+add_force {/tb_axi4Lite/axi_dut/axiM/awreadyM} -radix hex {1 0ns}
+run 10 ns
+add_force {/tb_axi4Lite/axi_dut/axiS/awvalid} -radix hex {0 0ns}
+add_force {/tb_axi4Lite/axi_dut/axiS/awaddr} -radix hex {b 0ns}
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns
+run 10 ns

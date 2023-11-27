@@ -1,4 +1,3 @@
-
 module top #(parameter dataWidth = 32, parameter addrWidth = 32)
 (
 input clk,input rst,
@@ -29,3 +28,4 @@ output [addrWidth-1:0]paddr,
 output [dataWidth-1:0]pwdata
 );
 
+endmodule
