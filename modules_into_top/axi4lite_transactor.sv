@@ -1,4 +1,4 @@
-module  AXILite_Structure #(parameter dataWidth = 32, addrWidth = 32)
+module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
 (
     input clk, rst, 
     axi4_Lite.axiSlave axiS,
@@ -17,8 +17,8 @@ module  AXILite_Structure #(parameter dataWidth = 32, addrWidth = 32)
     typedef enum logic [1:0] { addr, data_w, data_r, respone } regFSM;
     regFSM state,next_state;
 
-    always_ff @(posedge axiS.aclk or negedge axiS.aresetn) begin
-        if (!axiS.aresetn) begin
+    always_ff @(posedge clk or negedge rst) begin
+        if (!rst) begin
             state <= addr;
         end
         else begin
@@ -48,8 +48,8 @@ module  AXILite_Structure #(parameter dataWidth = 32, addrWidth = 32)
         endcase
     end
 
-    always_ff @(posedge axiS.aclk or negedge axiS.aresetn) begin
-        if(~axiS.aresetn)begin
+    always_ff @(posedge clk or negedge rst) begin
+        if(~rst)begin
             awaddrM <= {addrWidth{1'bx}};
             awprotM <= {3{1'bx}};
             araddrM <= {addrWidth{1'bx}};
