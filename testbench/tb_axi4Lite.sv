@@ -32,9 +32,7 @@ module tb_axi4Lite();
     araddrM,
     arprotM);
 
-    event itsOVER;
-    int i = 0;
-    int randAwready,randWready,randArready,randRready,randBready;
+    int randAwready,randWready,randArready,randRready,randBready,randAddr,randData;
     initial begin
 
          //$randomseed = $time;
@@ -83,22 +81,25 @@ module tb_axi4Lite();
         */
         
         
-        #5
+        #5;
             fork 
-                repeat(10) begin
+                repeat(5) begin
                     test_write();
-                    -> itsOVER;
+                    
                     #30;
                 end
-                wait(itsOVER.triggered()); i = i + 1;
-                while(i!=10)
                 repeat(10) signals_neIF_write();
-            join
-        /*
-        repeat(3)begin
+            join_any
+        #150;
+        
+        fork
+        repeat(5) begin
             test_read();
-            #30
-        end*/
+            
+                    #30;
+                end
+                repeat(10) signals_neIF_read();
+        join_any
 
     end
      
@@ -149,15 +150,16 @@ module tb_axi4Lite();
     task test_write();      // TASK WRITE
         #10;
         rst = 1;
-        @(posedge clk)
-        #($urandom_range(10, 40));
+        @(posedge clk);begin
+        randAddr = ($urandom_range(0, 9))*10;
+        #randAddr;
         // ???????????? ???????????????????? WRITE
 
         //  handshake addr
         i_f.axiSlave.awvalid <= 1;
         i_f.axiSlave.awaddr <= $urandom_range(0, 1024);
         i_f.axiSlave.awprot <= 3'b000;
-        wait((awreadyM == 1) & (i_f.axiSlave.awvalid == 1)) // handshake!!!
+        wait((awreadyM == 1) & (i_f.axiSlave.awvalid == 1)) // handshake addr!!!
             begin
                 #10;
                 awreadyM <=0;
@@ -165,19 +167,27 @@ module tb_axi4Lite();
                 // end handshake addr
 
                 // handshake data
-                #($urandom_range(10, 40)); 
+                randData = $urandom_range(0, 9)*10;
+                #randData; 
                 i_f.axiSlave.wvalid <= 1;
                 i_f.axiSlave.wdata <= $urandom_range(0, 1024);
                 i_f.axiSlave.wstrb <= $urandom_range(0, (2**dataWidth)/8-1);
-                wait((wreadyM == 1) & (i_f.axiSlave.wvalid == 1)) // handshake!!!
+                wait((wreadyM == 1) & (i_f.axiSlave.wvalid == 1)) // handshake data !!!
                     begin 
                         #10; 
                         wreadyM <=0;
                         i_f.axiSlave.wvalid <= 0;
                         bvalidM <= 1;
                         brespM <= 2'b00;
+                        wait((i_f.axiSlave.bready == 1) & (bvalidM == 1)) begin
+                        #10                                               // handshake resp !!!
+                        bvalidM <= 0;
+                        i_f.axiSlave.bready <=0;
+
+                        end
                         //end handshake
-                        // ???????????????????? ??????????
+                        // i am motherfucker ha ha
+                    end
                     end
             end
         //$stop;
@@ -185,7 +195,9 @@ module tb_axi4Lite();
 
     task test_read();      // TASK READ
         rst = 1;
-        #($urandom_range(10, 40));
+        @(posedge clk) begin
+        randAddr = ($urandom_range(0, 9))*10;
+        #randAddr;
 
         //  handshake addr
         i_f.axiSlave.arvalid <= 1;
@@ -199,7 +211,10 @@ module tb_axi4Lite();
                 // end handshake addr
 
                 // handshake data
-                #($urandom_range(10, 40)); 
+                randData = $urandom_range(0, 9)*10;
+                #randData;
+                /*#($urandom_range(10, 40)); 
+                */
                 rvalidM <= 1;
                 rdataM <= $urandom_range(0, 1024);
                 wait((i_f.axiSlave.rready == 1) & (rvalidM == 1)) // handshake!!!
@@ -210,7 +225,7 @@ module tb_axi4Lite();
                         rrespM <= 1;
                         //end handshake
                     end
-                
+                end
             end
         //$stop;
     endtask

@@ -63,39 +63,50 @@ module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
         else begin
             case (state)
                 addr: begin
+                    axiS.bvalid <= 0;
+                    axiS.rvalid <= 0;
                     if(axiS.awvalid&awreadyM) begin
                         awaddrM <= axiS.awaddr;
                         awprotM <= axiS.awprot;
+                        axiS.awready <= awreadyM;
                     end
                     else if (axiS.arvalid&arreadyM) begin
                         araddrM <= axiS.araddr;
                         arprotM <= axiS.arprot;
+                        axiS.arready <= arreadyM;
                     end
                 end
                 data_w: begin
+                    axiS.awready <= 0;
                     if(axiS.wvalid&wreadyM) begin
                         wdataM <= axiS.wdata;
                         wstrbM <= axiS.wstrb;
+                        axiS.wready <= wreadyM;
                     end
                 end
                 respone: begin
+                    axiS.wready <= 0;
                     if(axiS.bready&bvalidM) begin
                         axiS.bresp <= brespM;
+                        axiS.bvalid <= bvalidM;
                     end
                 end
                 data_r: begin
+                    axiS.arready <= 0;
                     if(axiS.rready&rvalidM)begin
                         axiS.rresp <= rrespM;
                         axiS.rdata <= rdataM;
+                        axiS.rvalid <= rvalidM;
                     end
                 end
             endcase
         end
     end
-
+    /*
     assign  axiS.awready = awreadyM;
     assign  axiS.wready = wreadyM;
     assign  axiS.bvalid = bvalidM;
     assign  axiS.arready = arreadyM;
     assign  axiS.rvalid = rvalidM;
+    */
 endmodule
