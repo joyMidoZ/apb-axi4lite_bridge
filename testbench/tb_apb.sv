@@ -12,7 +12,7 @@ module tb_apb;
   logic [ dataWidth-1 : 0 ] PWDATA;
   logic [ dataWidth/8-1 : 0 ] pstrb;
 
-    apb_transactor apb_transactor(clk, rst, IF.masterAPB, pprot,
+    apbMaster apbMaster(clk, rst, IF.masterAPB, pprot,
         pselx,
         penable,
         pwrite,
