@@ -1,81 +1,88 @@
-module apb_transactor #(parameter dataWidth = 32, addrWidth = 32)
+module apbMaster #(parameter dataWidth = 32, addrWidth = 32)
 (
     input clk, rst,
     apb.masterAPB apbM,
-    input [2:0] pprot,
-    input pselx,
-    input penable,
-    input pwrite,
-    input [dataWidth/8 - 1:0] pstrb,
-    input [addrWidth-1:0] paddr, 
-    input [dataWidth-1:0] pwdata,
+    input [2:0] pprotM,
+    input pselxM,
+    input pwriteM,
+    input [dataWidth/8 - 1:0] pstrbM,
+    input [addrWidth-1:0] paddrM, 
+    input [dataWidth-1:0] pwdataM,
 
-    output logic pslverr,
-    output logic pready,
-    output logic [dataWidth-1:0]prdata
+    output logic pslverrM,
+    output logic preadyM,
+    output logic [dataWidth-1:0]prdataM
 );
+    logic penableM;
+    
 
-    typedef enum logic [1:0] { idle, setup, access } FSMstr;
-    FSMstr state,next_state;
+    typedef enum logic [1:0] { idle, setup, access } fsmStr;
+    fsmStr state,next_state;
     always_ff @(posedge clk or negedge rst) begin
-        if (~rst) begin
+        if(~rst)
+        begin
             state <= idle;
         end
+
         else begin
             state <= next_state;
         end
+
     end
-    
+
     always_comb begin
         case (state)
-        idle:begin
-            if(pselx) next_state = setup;
-            else next_state = idle;
-        end
-        setup:begin
-            next_state = access;
-        end
-        access: begin
-            if(apbM.pready&pselx) next_state = setup;
-            else if (apbM.pready&~pselx) next_state = idle;
-            else next_state = access;
-        end
-
+            idle: begin
+                if(pselxM) next_state = setup;
+                else next_state = idle;
+            end
+            setup: begin
+                next_state = access;
+            end
+            access: begin
+                if(apbM.pready & pselxM) next_state = setup;
+                else if (apbM.pready & ~pselxM) next_state = idle;
+                else next_state = access;
+            end
         endcase
     end
-
-    always_ff @(posedge clk or negedge rst) begin
-        if(~rst)begin
-        end
-        else begin
-                case (state)
-                    idle:begin
-                        if(pselx)begin 
-                            apbM.penable <= 0;
-                            apbM.pprot <= pprot;
-                            apbM.pstrb <= pstrb;
-                            apbM.paddr <= paddr;
-                            apbM.pwrite <= pwrite;
-
-                            if(pwrite) begin
-                                apbM.pwdata <= pwdata;
-                                end
-
-                            else begin
-                                prdata <= apbM.prdata; 
-                                pslverr <= apbM.pslverr;
-                            end
-                            
-                        end
+    always_ff @(posedge clk) begin
+    
+    
+                    apbM.pselx <= pselxM;
+                    apbM.paddr <= paddrM;
+                    apbM.pwrite <= pwriteM;
+                    apbM.pprot <= pprotM;
+                    if(pwriteM) begin
+                    apbM.pstrb <= pstrbM;
+                    apbM.pwdata <= pwdataM;
                     end
-                    setup: begin
-                        apbM.penable <=1;
-                    end
+                    
+        case (state)
+        
+        
+            idle:begin
+                if(pselxM)
+                begin
+                   
+                    apbM.penable <= 0;
+                end
+            end
+            setup:begin
+                apbM.penable <= ~apbM.penable;
+                 
 
-                    access:begin
-                        if(next_state==setup) apbM.penable <= 0;
-                    end
-                endcase
-        end
+            end
+            access:begin
+                if(apbM.pready) apbM.penable <= ~apbM.penable;
+      
+                if(~pwriteM)
+                begin
+                    prdataM <= apbM.prdata;
+                    apbM.pready <= preadyM;
+                    pslverrM <= apbM.pslverr;
+                end
+            end
+        endcase
     end
 endmodule

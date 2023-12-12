@@ -2,71 +2,108 @@
 
 module tb_apb;
 
-  // Параметры шины APB
+  // ????????? ???? APB
   parameter addrWidth = 32;
   parameter dataWidth = 32;
   apb IF(clk,rst);
-  // Сигналы шины APB
-  logic clk, rst, psel, penable, pwrite, pslverr;
-  logic [ addrWidth-1 : 0 ]  PADDR;
-  logic [ dataWidth-1 : 0 ] PWDATA;
-  logic [ dataWidth/8-1 : 0 ] pstrb;
+  // ??????? ???? APB
+  bit clk,rst,randSet;
+  int randW,randR;
+  always #5 clk = ~clk;
 
-    apbMaster apbMaster(clk, rst, IF.masterAPB, pprot,
-        pselx,
-        penable,
-        pwrite,
-        pstrb
-        paddr, 
-        pwdata,
-        pslverr,
-        pready,
-        pradata)
-          // Модуль тестирования
+    logic [2:0] pprotM;
+    logic pselxM;
+    logic pwriteM;
+    logic [dataWidth/8 - 1:0] pstrbM;
+    logic [addrWidth-1:0] paddrM;
+    logic [dataWidth-1:0] pwdataM;
+    logic pslverrM;
+    logic preadyM;
+    logic [dataWidth-1:0]prdataM;
+  
+
+    apbMaster dut (clk, rst, IF.masterAPB,
+        pprotM,
+        pselxM,
+        pwriteM,
+        pstrbM,
+        paddrM, 
+        pwdataM,
+        pslverrM,
+        preadyM,
+        prdataM );
+          
   initial begin
-    // Инициализация сигналов
-    pclk = 0;
-    presetn = 0;
-    psel = 0;
-    penable = 0;
-    pwrite = 0;
-    PADDR = 0;
-    PWDATA = 0;
-    PSTRB = 0;
-    PWDATA_byte_enable = 0;
 
-    // Запуск сигнала тактового сигнала
-    forever #5 pclk = ~pclk;
+        pselxM = 0;
+        pwriteM = 0;
+        paddrM = 0;
+        pwdataM = 0;
+        pstrbM = 0;
+        IF.masterAPB.pslverr = 0;
+        IF.masterAPB.pready = 0;
+        IF.masterAPB.prdata = 0;
+        clk <= 0;
+        rst <= 0;
+        #55;
+        rst <= 1;
+    
+    // ?????? ?????
+    repeat(10);
+    test_write();
 
-    // Запуск теста
-    test();
+    //#100;
+
+    //repeat(3);
+    //test_read();
 
   end
 
-  // Тестовая процедура
-  task test();
-    // Сброс
-    presetn = 1;
-    #10;
+  // ???????? ?????????
+  task test_write();
 
-    // Транзакция чтения
-    psel = 1;
-    penable = 1;
-    pwrite = 0;
-    PADDR = $urandom_range(0, 2**PADDR_WIDTH-1);
-    #10;
+    #30;
+    
+    // ?????????? ??????
+    randSet = $urandom_range(0, 1);
+    //@(posedge clk);
+    pselxM = randSet;
+    if(pselxM)begin
+    pwriteM = 1;
+    pprotM = 0;
+    paddrM = $urandom_range(0, 2048);
+    pwdataM = $urandom_range(0, 2048);
+    pstrbM = $urandom_range(0, 2**(dataWidth/8)-1);
 
-    // Транзакция записи
-    psel = 1;
-    penable = 1;
-    pwrite = 1;
-    PADDR = $urandom_range(0, 2**PADDR_WIDTH-1);
-    PWDATA = $urandom_range(0, 2**PDATA_WIDTH-1);
-    PSTRB = $urandom_range(0, 2**(PDATA_WIDTH/8)-1);
+    randW = $urandom_range(0, 5)*10;
+    #randW;
+    IF.masterAPB.pready = 1;
     #10;
-
-    // Завершение теста
-    $stop;
+    IF.masterAPB.pready = 0;
+    end
+    
   endtask
 
+  task test_read();
+  // ?????????? ??????
+    @(posedge clk)begin
+    randSet = $urandom_range(0, 1);
+    pselxM = randSet;
+    if(pselxM)begin
+    pwriteM = 0;
+    pprotM = 0;
+    paddrM = $urandom_range(0, 2048);
+    pstrbM = $urandom_range(0, 2**(dataWidth/8)-1);
+    IF.masterAPB.pslverr = 0;
+    IF.masterAPB.pready = 0;
+    IF.masterAPB.prdata = $urandom_range(0, 2048);
+
+    randR = $urandom_range(0, 5)*10;
+    #randR;
+    IF.masterAPB.pready = 1;
+    #10;
+    IF.masterAPB.pready = 0;
+    end
+    end
+      endtask
 endmodule
