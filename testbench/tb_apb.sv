@@ -7,8 +7,9 @@ module tb_apb;
   parameter dataWidth = 32;
   apb IF(clk,rst);
   // ??????? ???? APB
-  bit clk,rst,randSet;
-  int randW,randR;
+  bit clk,rst,prv;
+  
+  int randW,randR,randSet1,randSet2;
   always #5 clk = ~clk;
 
     logic [2:0] pprotM;
@@ -48,26 +49,28 @@ module tb_apb;
         #55;
         rst <= 1;
     
-    // ?????? ?????
-    repeat(10);
+
+    repeat(10)begin
     test_write();
+    end
 
-    //#100;
+    #100;
 
-    //repeat(3);
-    //test_read();
-
+    repeat(10)begin
+    test_read();
+    end
   end
 
-  // ???????? ?????????
+
   task test_write();
 
     #30;
+    prv = 0;
     
-    // ?????????? ??????
-    randSet = $urandom_range(0, 1);
-    //@(posedge clk);
-    pselxM = randSet;
+    randSet1 = $urandom_range(0, 1);
+    
+    pselxM = randSet1;
+    if(pselxM) prv = 1;
     if(pselxM)begin
     pwriteM = 1;
     pprotM = 0;
@@ -85,17 +88,17 @@ module tb_apb;
   endtask
 
   task test_read();
-  // ?????????? ??????
-    @(posedge clk)begin
-    randSet = $urandom_range(0, 1);
-    pselxM = randSet;
+    #30;
+
+    randSet2 = $urandom_range(0, 1);
+    pselxM = randSet2;
     if(pselxM)begin
     pwriteM = 0;
     pprotM = 0;
     paddrM = $urandom_range(0, 2048);
     pstrbM = $urandom_range(0, 2**(dataWidth/8)-1);
     IF.masterAPB.pslverr = 0;
-    IF.masterAPB.pready = 0;
+    
     IF.masterAPB.prdata = $urandom_range(0, 2048);
 
     randR = $urandom_range(0, 5)*10;
@@ -104,6 +107,6 @@ module tb_apb;
     #10;
     IF.masterAPB.pready = 0;
     end
-    end
+
       endtask
 endmodule

@@ -59,8 +59,7 @@ module apbMaster #(parameter dataWidth = 32, addrWidth = 32)
                     end
                     
         case (state)
-        
-        
+
             idle:begin
                 if(pselxM)
                 begin
@@ -79,8 +78,19 @@ module apbMaster #(parameter dataWidth = 32, addrWidth = 32)
                 if(~pwriteM)
                 begin
                     prdataM <= apbM.prdata;
-                    apbM.pready <= preadyM;
+                    //apbM.pready <= preadyM;
+                    preadyM <= apbM.pready;
                     pslverrM <= apbM.pslverr;
+                end
+                else
+                begin
+                    apbM.pselx <= apbM.pselx;
+                    apbM.paddr <= apbM.paddr;
+                    apbM.pwrite <= apbM.pwrite;
+                    apbM.pprot <= apbM.pprot;
+                    
+                    apbM.pstrb <= apbM.pstrb;
+                    apbM.pwdata <= apbM.pwdata;
                 end
             end
         endcase
