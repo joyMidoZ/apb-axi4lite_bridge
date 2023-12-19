@@ -43,7 +43,6 @@ module tb_bridge();
 
         i_f.axiSlave.rready <= 0;
         
-
         #25;
         rst <= 1;
         #20;
@@ -64,7 +63,7 @@ module tb_bridge();
     task automatic test_read ();
         test_write_addr();
         test_read_data();
-    endtask //automatic
+    endtask
     task  preadyTest();
         fork
         @(posedge clk) begin
@@ -91,7 +90,7 @@ module tb_bridge();
             i_f.axiSlave.awvalid <= 0;
         end
         
-    endtask //automatic
+    endtask 
 
     task automatic test_write_data();
         randsVar2 = $urandom_range(1,9)*10;
