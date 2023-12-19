@@ -50,15 +50,20 @@ module tb_bridge();
             test_write();
         #100;
             test_write();
+        #50;
+            test_read();
+        #50;
+            test_read();
     end
-    int randsVar1,randsVar2,randsVar3;
+    int randsVar1,randsVar2,randsVar3,randsVar4;
     task automatic test_write();
         test_write_addr();
         test_write_data();
         test_write_resp();
     endtask //automatic
     task automatic test_read ();
-        
+        test_write_addr();
+        test_read_data();
     endtask //automatic
     task  preadyTest();
         fork
@@ -66,7 +71,8 @@ module tb_bridge();
             randAwready = $urandom_range(2, 9)*10;
             #randAwready;
             IF.masterAPB.pready <= 1;
-            
+            #10;
+            IF.masterAPB.pready <= 0;
             end
         join
     endtask
@@ -116,4 +122,20 @@ module tb_bridge();
             IF.masterAPB.pslverr <= 0;
         end
     endtask //automatic
+
+    task automatic test_read_data();
+        randsVar4 = $urandom_range(1,9)*10;
+        #randsVar4;
+        fork
+            i_f.axiSlave.rready <= 1;
+
+        join
+        @((i_f.axiSlave.rready == 1) & (i_f.axiSlave.rvalid == 1))
+        begin
+            #10;
+            i_f.axiSlave.rready <= 0;
+        end
+
+
+        endtask
 endmodule

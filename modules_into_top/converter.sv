@@ -33,22 +33,23 @@ module converter #(parameter dataWidth = 32, addrWidth = 32)
     assign bvalid = pslverr;
     assign bresp = 2'b00;
     assign push_A = (~full_A&(awvalid|arvalid))?1:0;
-    assign push_D = (~full_D&awvalid)?1:0;
-
+    assign push_D = (~full_D&wvalid)?1:0;
+    assign push_D_read = (~full_D_read&rvalid)?1:0;
     //logic for apb not ez)))
     //assign pop_A = (empty_A&psel)?1:0;
-    assign pop_D = (empty_D&(awvalid&~arvalid)&psel)?1:0;
-    assign pop_D_read = (empty_D_read&(~awvalid&arvalid)&psel)?1:0;
+    //assign pop_D = (empty_D&(awvalid&~arvalid)&psel)?1:0;
+    assign pop_D_read = (empty_D_read&pready)?1:0;
     //assign psel = ()?1:0; //maybe error because pop_a is output
     always_comb begin 
         psel = 0;
         pop_A = 0;
+        pop_D = 0;
         if(wvalid)begin
         
-            psel = 1; pop_A = 1; 
+            psel = 1; pop_A = 1; pop_D = 1;
         end
 
-        if(psel) begin
+        
         if(awvalid&~arvalid) begin 
 
             pwrite = 1; 
@@ -57,7 +58,7 @@ module converter #(parameter dataWidth = 32, addrWidth = 32)
 
             pwrite = 0; 
          end 
-        end
+        
          
     end
     assign pprot = (pwrite)? awprot:arprot;

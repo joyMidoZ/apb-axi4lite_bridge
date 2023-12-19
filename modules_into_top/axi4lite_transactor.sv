@@ -65,6 +65,8 @@ module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
             wvalidM <= 0;
         end
         else begin
+        awvalidM <= axiS.awvalid;
+        wvalidM <= axiS.wvalid;
             case (state)
                 addr: begin
                     //axiS.bvalid <= 0;
@@ -72,7 +74,7 @@ module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
                     if(axiS.awvalid&awreadyM) begin
                         awaddrM <= axiS.awaddr;
                         awprotM <= axiS.awprot;
-                        awvalidM <= axiS.awvalid;
+                        //awvalidM <= axiS.awvalid;
                         axiS.awready <= awreadyM;
                     end
                     else if (axiS.arvalid&arreadyM) begin
@@ -88,7 +90,7 @@ module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
                         wdataM <= axiS.wdata;
                         wstrbM <= axiS.wstrb;
                         axiS.wready <= wreadyM;
-                        wvalidM <= axiS.wvalid;
+                        //wvalidM <= axiS.wvalid;
                     end
                 end
                 respone: begin
