@@ -51,7 +51,7 @@ module tb_apb;
     
 
     repeat(10)begin
-    test_write();
+    test_write_noWait();
     end
 
     #100;
@@ -61,7 +61,25 @@ module tb_apb;
     end
   end
 
+  task  test_write_noWait();
+        #30;
+        randSet1 = $urandom_range(0, 1);
+    
+        pselxM = randSet1;
 
+        if(pselxM)begin
+        pwriteM = 1;
+        pprotM = 0;
+        paddrM = $urandom_range(0, 2048);
+        pwdataM = $urandom_range(0, 2048);
+        pstrbM = $urandom_range(0, 2**(dataWidth/8)-1);
+
+        #10;
+        IF.masterAPB.pready = 1;
+        #10;
+        IF.masterAPB.pready = 0;
+        end
+  endtask 
   task test_write();
 
     #30;
@@ -78,7 +96,7 @@ module tb_apb;
     pwdataM = $urandom_range(0, 2048);
     pstrbM = $urandom_range(0, 2**(dataWidth/8)-1);
 
-    randW = $urandom_range(0, 5)*10;
+    randW = $urandom_range(1, 5)*10;
     #randW;
     IF.masterAPB.pready = 1;
     #10;
@@ -101,7 +119,7 @@ module tb_apb;
     
     IF.masterAPB.prdata = $urandom_range(0, 2048);
 
-    randR = $urandom_range(0, 5)*10;
+    randR = $urandom_range(1, 5)*10;
     #randR;
     IF.masterAPB.pready = 1;
     #10;

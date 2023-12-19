@@ -1,8 +1,8 @@
 // A generic D-flip-flop based FIFO
 
-module generic_flip_flop_fifo_rtl
+module fifo
 # (
-  parameter width = 8, depth = 10
+  parameter width = 32, depth = 10
 )
 (
   input                clk,
@@ -10,6 +10,7 @@ module generic_flip_flop_fifo_rtl
   input                push,
   input                pop,
   input  [width - 1:0] write_data,
+
   output logic [width - 1:0] read_data,
   output               empty,
   output               full
@@ -41,16 +42,21 @@ module generic_flip_flop_fifo_rtl
             rd_ptr <= rd_ptr == max_ptr ? '0 : rd_ptr +1'b1;
   //--------------------------------------------------------------------------
 
-  always @ (posedge clk)
+/*  always @ (posedge clk)
   begin
     if (push)
       data [wr_ptr] <= write_data;
     
     
     end
-     
-    always @ (posedge clk)
-    if(pop) read_data <= data[rd_ptr];    
+*/
+    always_comb begin 
+      data [wr_ptr] = (push)? write_data:data[wr_ptr];
+      read_data =(pop)?data[rd_ptr]:read_data;
+    end
+
+    //always @ (posedge clk)
+    //if(pop) read_data <= data[rd_ptr];    
   //assign read_data = data [rd_ptr];
 
   //--------------------------------------------------------------------------
@@ -72,7 +78,7 @@ module generic_flip_flop_fifo_rtl
 endmodule
 
 //----------------------------------------------------------------------------
-
+/*
 module fifo_model
 # (
   parameter width = 8, depth = 2
@@ -118,4 +124,4 @@ module fifo_model
       full  <= queue.size () == depth;
     end
       
-endmodule
+endmodule*/

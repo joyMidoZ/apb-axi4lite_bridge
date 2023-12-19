@@ -55,36 +55,11 @@ module tb_axi4Lite();
         i_f.axiSlave.rready <= 0;
         rvalidM <= 0;
         
-        //forever #5 clk = ~ clk;
-        /*#5;
-        
-        repeat(1) begin
-                    fork
-                        repeat(10) signals_neIF_write();
-                        
-                        repeat(10) test_write();
-                    join
-                    -> itsOVER;
-                    #30;
-                    
-        end
-        repeat(1) begin
-                    fork
-                        repeat(10) signals_neIF_read();
-                        
-                        repeat(10) test_read();
-                    join
-                    -> itsOVER;
-                    #30;
-                    
-        end
-        */
-        
         
         #5;
             fork 
                 repeat(5) begin
-                    test_write();
+                test_write();
                     
                     #30;
                 end
