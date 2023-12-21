@@ -1,16 +1,16 @@
 interface axi4_Lite
-    #(parameter dataWidth = 32, addrWidth = 32)
+    #(parameter DATAWIDTH = 32, ADDRWIDTH = 32)
     (
         input aclk, input aresetn
     );
 
-    logic [addrWidth-1:0] awaddr; //in
+    logic [ADDRWIDTH-1:0] awaddr; //in
     logic [2:0] awprot; //in
     logic awvalid;  //in
     logic awready;  //out
 
-    logic [dataWidth-1:0] wdata;    //in
-    logic [dataWidth/8 - 1:0] wstrb;    //in
+    logic [DATAWIDTH-1:0] wdata;    //in
+    logic [DATAWIDTH/8 - 1:0] wstrb;    //in
     logic wvalid;   //in
     logic wready;   //out
 
@@ -18,12 +18,12 @@ interface axi4_Lite
     logic bvalid;   //out
     logic bready;   //in
 
-    logic [addrWidth-1:0] araddr;   //in
+    logic [ADDRWIDTH-1:0] araddr;   //in
     logic [2:0]arprot;  //in
     logic arvalid;  //in
     logic arready;  //out
 
-    logic [dataWidth-1:0] rdata;    //out
+    logic [DATAWIDTH-1:0] rdata;    //out
     logic [1:0] rresp;  //out
     logic rvalid;   //out
     logic rready;   //in
@@ -31,13 +31,13 @@ interface axi4_Lite
     /////////
 
     // <-------MASTER SIGNALS-------> //
-    logic [addrWidth-1:0] awaddrM; //out
+    logic [ADDRWIDTH-1:0] awaddrM; //out
     logic [2:0] awprotM; //out
     logic awvalidM;  //out
     logic awreadyM;  //in
 
-    logic [dataWidth-1:0] wdataM;    //out
-    logic [dataWidth/8 - 1:0] wstrbM;    //out
+    logic [DATAWIDTH-1:0] wdataM;    //out
+    logic [DATAWIDTH/8 - 1:0] wstrbM;    //out
     logic wvalidM;   //out
     logic wreadyM;   //in
 
@@ -45,12 +45,12 @@ interface axi4_Lite
     logic bvalidM;   //in
     logic breadyM;   //out
 
-    logic [addrWidth-1:0] araddrM;   //out
+    logic [ADDRWIDTH-1:0] araddrM;   //out
     logic [2:0]arprotM;  //out
     logic arvalidM;  //out
     logic arreadyM;  //in
 
-    logic [dataWidth-1:0] rdataM;    //im
+    logic [DATAWIDTH-1:0] rdataM;    //im
     logic [1:0] rrespM;  //in
     logic rvalidM;   //in
     logic rreadyM;   //out

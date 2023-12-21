@@ -1,19 +1,28 @@
-module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
+module  axi4lite_transactor
+    import specConst::*;
+    #(parameter DATAWIDTH = 32, ADDRWIDTH = 32)
 (
     input clk, rst, 
     axi4_Lite.axiSlave axiS,
-    input  awreadyM,wreadyM,arreadyM,bvalidM,rvalidM,
-    input  [1:0] brespM,
-    input  [dataWidth-1:0] rdataM,
-    input  [1:0] rrespM,
+    input  awreadyM,
+           wreadyM,
+           arreadyM,
+           bvalidM,
+           rvalidM,
+    input  [RESP_LEN-1:0] brespM,
+    input  [DATAWIDTH-1:0] rdataM,
+    input  [RESP_LEN-1:0] rrespM,
 
-    output logic [addrWidth-1:0] awaddrM,
-    output logic [2:0] awprotM,
-    output logic [dataWidth-1:0] wdataM,
-    output logic [dataWidth/8 - 1:0] wstrbM,
-    output logic [addrWidth-1:0] araddrM,
+    output logic [ADDRWIDTH-1:0] awaddrM,
+    output logic [PROT_LEN-1:0] awprotM,
+    output logic [DATAWIDTH-1:0] wdataM,
+    output logic [STROBE_LEN-1:0] wstrbM,
+    output logic [ADDRWIDTH-1:0] araddrM,
     output logic [2:0] arprotM,
-    output logic awvalidM,arvalidM,wvalidM
+    output logic awvalidM,
+                 arvalidM,
+                 wvalidM,
+                 rreadyM
 );
     typedef enum logic [1:0] { addr, data_w, data_r, respone } regFSM;
     regFSM state,next_state;
@@ -51,15 +60,15 @@ module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
 
     always_ff @(posedge clk or negedge rst) begin
         if(~rst)begin
-            awaddrM <= {addrWidth{1'b0}};
+            awaddrM <= {ADDRWIDTH{1'b0}};
             awprotM <= {3{1'b0}};
-            araddrM <= {addrWidth{1'b0}};
+            araddrM <= {ADDRWIDTH{1'b0}};
             arprotM <= {3{1'b0}};
-            wdataM  <= {dataWidth{1'b0}};
-            wstrbM  <= {dataWidth/8{1'b0}};
+            wdataM  <= {DATAWIDTH{1'b0}};
+            wstrbM  <= {DATAWIDTH/8{1'b0}};
             axiS.bresp <= {2{1'b0}};
             axiS.rresp <= {2{1'b0}};
-            axiS.rdata <= {dataWidth{1'b0}};
+            axiS.rdata <= {DATAWIDTH{1'b0}};
             arvalidM <= 0;
             awvalidM <= 0;
             wvalidM <= 0;
@@ -67,6 +76,9 @@ module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
         else begin
         awvalidM <= axiS.awvalid;
         wvalidM <= axiS.wvalid;
+        arvalidM <= axiS.arvalid;
+        axiS.rvalid<= rvalidM;
+        rreadyM <= axiS.rready;
             case (state)
                 addr: begin
                     //axiS.bvalid <= 0;
@@ -81,7 +93,7 @@ module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
                         araddrM <= axiS.araddr;
                         arprotM <= axiS.arprot;
                         axiS.arready <= arreadyM;
-                        arvalidM <= axiS.arvalid;
+                        //arvalidM <= axiS.arvalid;
                     end
                 end
                 data_w: begin
@@ -105,17 +117,11 @@ module  axi4lite_transactor #(parameter dataWidth = 32, addrWidth = 32)
                     if(axiS.rready&rvalidM)begin
                         axiS.rresp <= rrespM;
                         axiS.rdata <= rdataM;
-                        axiS.rvalid <= rvalidM;
+                       // axiS.rvalid <= rvalidM;
                     end
                 end
             endcase
         end
     end
-    /*
-    assign  axiS.awready = awreadyM;
-    assign  axiS.wready = wreadyM;
-    assign  axiS.bvalid = bvalidM;
-    assign  axiS.arready = arreadyM;
-    assign  axiS.rvalid = rvalidM;
-    */
+
 endmodule

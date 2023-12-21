@@ -1,17 +1,17 @@
 interface apb
-    #(dataWidth = 32, addrWidth = 32)
+    #(DATAWIDTH = 32, ADDRWIDTH = 32)
     (
         input pclk, input presetn
     );
-        logic [addrWidth - 1:0] paddr;
+        logic [ADDRWIDTH - 1:0] paddr;
         logic [2:0] pprot;
         logic pselx;
         logic penable;
         logic pwrite;
-        logic [dataWidth - 1:0] pwdata;
-        logic [dataWidth/8 - 1:0]pstrb;
+        logic [DATAWIDTH - 1:0] pwdata;
+        logic [DATAWIDTH/8 - 1:0]pstrb;
         logic pready;
-        logic [dataWidth - 1:0] prdata;
+        logic [DATAWIDTH - 1:0] prdata;
         logic pslverr;
         
         

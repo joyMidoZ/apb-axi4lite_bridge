@@ -1,17 +1,17 @@
-module apbComb #(parameter dataWidth = 32, addrWidth = 32)
+module apbComb #(parameter DATAWIDTH = 32, ADDRWIDTH = 32)
 (
     apb.masterAPB apbM,
     input [2:0] pprotM,
     input pselxM,
     input pwriteM,
     input penableM,
-    input [dataWidth/8 - 1:0] pstrbM,
-    input [addrWidth-1:0] paddrM, 
-    input [dataWidth-1:0] pwdataM,
+    input [DATAWIDTH/8 - 1:0] pstrbM,
+    input [ADDRWIDTH-1:0] paddrM, 
+    input [DATAWIDTH-1:0] pwdataM,
 
     output logic pslverrM,
     output logic preadyM,
-    output logic [dataWidth-1:0]prdataM
+    output logic [DATAWIDTH-1:0]prdataM
 );
     /*
     assign apbM.pselx = pselxM;
@@ -30,6 +30,6 @@ module apbComb #(parameter dataWidth = 32, addrWidth = 32)
     assign apbM.pprot = pprotM;
 
     assign preadyM =  apbM.pready;
-    assign pslverrM = apbM.pslverrM;
-    assign prdataM = apbM.prdata;
+    assign pslverrM = apbM.pslverr;
+    assign prdataM = (preadyM) ? apbM.prdata : prdataM;
 endmodule

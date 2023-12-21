@@ -2,29 +2,31 @@
 
 module fifo
 # (
-  parameter width = 32, depth = 10
+  parameter WIDTH = 32,
+            DEPTH = 10
 )
 (
   input                clk,
   input                rst,
   input                push,
   input                pop,
-  input  [width - 1:0] write_data,
+  input  [WIDTH - 1:0] write_data,
 
-  output logic [width - 1:0] read_data,
+  output logic [WIDTH - 1:0] read_data,
   output               empty,
   output               full
 );
+  localparam DEPTH_INCR = DEPTH + 1;
+  localparam DEPTH_DINCR = DEPTH - 1;
+  localparam POINTER_WIDTH = $clog2 (DEPTH),
+             COUNTER_WIDTH = $clog2 (DEPTH_INCR);
 
-  localparam pointer_width = $clog2 (depth),
-             counter_width = $clog2 (depth + 1);
+  localparam [COUNTER_WIDTH - 1:0] max_ptr = COUNTER_WIDTH' (DEPTH_DINCR);
 
-  localparam [counter_width - 1:0] max_ptr = counter_width' (depth - 1);
+  logic [POINTER_WIDTH - 1:0] wr_ptr, rd_ptr;
+  logic [COUNTER_WIDTH - 1:0] cnt;
 
-  logic [pointer_width - 1:0] wr_ptr, rd_ptr;
-  logic [counter_width - 1:0] cnt;
-
-  reg [width - 1:0] data [0: depth - 1];
+  reg [WIDTH - 1:0] data [0: DEPTH_DINCR];
 
   //--------------------------------------------------------------------------
 
@@ -34,7 +36,7 @@ module fifo
     else if (push)
       wr_ptr <= wr_ptr == max_ptr ? '0 : wr_ptr + 1'b1;
 
-  // TODO: Add logic for rd_ptr
+
     always@(posedge clk)
         if(rst)
             rd_ptr <= '0;
@@ -73,55 +75,7 @@ module fifo
 
   assign empty = ~| cnt;
     
-  // TODO: Add logic for full output
-    assign full = (cnt==depth)? 1:0;
+
+    assign full = (cnt==DEPTH)? 1:0;
 endmodule
 
-//----------------------------------------------------------------------------
-/*
-module fifo_model
-# (
-  parameter width = 8, depth = 2
-)
-(
-  input                      clk,
-  input                      rst,
-  input                      push,
-  input                      pop,
-  input        [width - 1:0] write_data,
-  output logic [width - 1:0] read_data,
-  output logic               empty,
-  output logic               full
-);
-
-  logic [width - 1:0] queue [$];
-  logic [width - 1:0] dummy;
-
-  always @ (posedge clk)
-    if (rst)
-    begin
-      queue  = {};
-      empty <= '1;
-      full  <= '0;
-    end
-    else
-    begin
-      assert (~ (queue.size () == depth & push & ~ pop));
-      assert (~ (queue.size () == 0     & pop));
-      
-      if (queue.size () > 0 & pop)
-        dummy <= queue.pop_front ();
-
-      if (queue.size () < depth & push)
-        queue.push_back (write_data);
-        
-      if (queue.size () > 0)
-        read_data <= queue [0];
-      else
-        read_data <= 'x;
-
-      empty <= queue.size () == 0;
-      full  <= queue.size () == depth;
-    end
-      
-endmodule*/

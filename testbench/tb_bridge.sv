@@ -1,4 +1,4 @@
-
+`timescale 1ns/1ps
 module tb_bridge();
     parameter addrWidth = 32;
     parameter dataWidth = 32;
@@ -22,7 +22,7 @@ module tb_bridge();
     //localparam int randTime;
     top dut (clk,rst,i_f.axiSlave,IF.masterAPB);
     bit flag = 0;
-    int randAwready,randWready,randArready,randRready,randBready,randAddr,randData;
+    int randAwready,randWready,randArready,randRready,randBready,randAddr,randData,randTestMake,randNum1;
     initial begin
 
          //$randomseed = $time;
@@ -45,24 +45,43 @@ module tb_bridge();
         
         #25;
         rst <= 1;
+        /*
         #20;
             test_write();
         #100;
-            test_write();
-        #50;
-            test_read();
-        #50;
-            test_read();
+            test_write();*/
+            
+            repeat(100)begin
+                randTestMake = $urandom_range(0,999);
+                if(randTestMake%2)begin
+                    #50;
+                    test_read();
+                end
+                
+                else begin
+                    #50;
+                    test_write();
+                end
+            end
+            
+                    
     end
     int randsVar1,randsVar2,randsVar3,randsVar4;
-    task automatic test_write();
+    task  test_write();
         test_write_addr();
         test_write_data();
         test_write_resp();
+        //$strobe("[strobe] time=%0t || awaddr=0x%0h", $time, i_f.axiSlave.awaddr);
     endtask //automatic
-    task automatic test_read ();
-        test_write_addr();
+    task test_read ();
+        test_read_addr();
+        $strobe("[strobe] ADDR || araddr=0x%0h || paddr=0x%0h || ",
+         i_f.axiSlave.araddr,IF.masterAPB.paddr);
+         
         test_read_data();
+        $strobe("[strobe] DATA || prdata=0x%0h || rdata=0x%0h ||",
+         IF.masterAPB.prdata, i_f.axiSlave.rdata);
+         
     endtask
     task  preadyTest();
         fork
@@ -76,7 +95,19 @@ module tb_bridge();
         join
     endtask
 
-    task automatic test_write_addr();
+    task pslverrTest();
+        fork
+            @(posedge clk)begin
+                randNum1 = $urandom_range(2, 5)*10;
+                #randNum1;
+                IF.masterAPB.pslverr <= 1;
+                #10;
+                IF.masterAPB.pslverr <= 0;
+            end
+            join
+    endtask
+
+    task  test_write_addr();
         randsVar1 = $urandom_range(1,9)*10;
         #randsVar1;
         fork
@@ -89,45 +120,65 @@ module tb_bridge();
             #10;
             i_f.axiSlave.awvalid <= 0;
         end
-        
+        //$strobe("[strobe] time=%0t || awaddr=0x%0h", $time, i_f.axiSlave.awaddr);
+        //$display("[strobe] time=%0t || awaddr=0x%0h", $time, i_f.axiSlave.awaddr);
     endtask 
 
-    task automatic test_write_data();
+    task  test_write_data();
         randsVar2 = $urandom_range(1,9)*10;
         #randsVar2;
         fork
             i_f.axiSlave.wvalid <= 1;
             i_f.axiSlave.wdata <= $urandom_range(0, 1024);
-            i_f.axiSlave.wstrb <= $urandom_range(0, (2**dataWidth)/8-1);            
+            i_f.axiSlave.wstrb <= $urandom_range(0, (2**dataWidth)/8-1);  
+                 
         join
         @((i_f.axiSlave.wready == 1) & (i_f.axiSlave.wvalid == 1))
         begin
             #10;
             i_f.axiSlave.wvalid <= 0;
-            preadyTest();
         end
+        preadyTest();     
     endtask //automatic
 
-    task automatic test_write_resp();
+    task  test_write_resp();
         randsVar3 = $urandom_range(1,9)*10;
-        #randsVar3;
+        #10;
         fork
             i_f.axiSlave.bready <= 1;
-            IF.masterAPB.pslverr <= 1;
+            pslverrTest();
+            
         join
-        @(i_f.axiSlave.bvalid == 1)
+        @((IF.masterAPB.pslverr == 1))
         begin
             i_f.axiSlave.bready <=0;
-            IF.masterAPB.pslverr <= 0;
+            
         end
-    endtask //automatic
+    endtask 
 
-    task automatic test_read_data();
+    task test_read_addr();
+        randsVar1 = $urandom_range(1,9)*10;
+        #randsVar1;
+        fork
+            i_f.axiSlave.arvalid <= 1;
+            i_f.axiSlave.araddr <= $urandom_range(0, 1024);
+            i_f.axiSlave.arprot <= 3'b000;
+        join
+        @((i_f.axiSlave.arready == 1) & (i_f.axiSlave.arvalid == 1)) 
+        begin
+            #10;
+            i_f.axiSlave.arvalid <= 0;
+        end
+                
+    endtask
+
+    task  test_read_data();
         randsVar4 = $urandom_range(1,9)*10;
         #randsVar4;
         fork
             i_f.axiSlave.rready <= 1;
-
+            IF.masterAPB.prdata <= $urandom_range(0, 1024);
+            preadyTest();
         join
         @((i_f.axiSlave.rready == 1) & (i_f.axiSlave.rvalid == 1))
         begin
