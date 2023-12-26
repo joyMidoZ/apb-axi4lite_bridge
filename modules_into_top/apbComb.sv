@@ -2,7 +2,7 @@ module apbComb #(parameter DATAWIDTH = 32, ADDRWIDTH = 32)
 (
     apb.masterAPB apbM,
     input [2:0] pprotM,
-    input pselxM,
+    input logic pselxM,
     input pwriteM,
     input penableM,
     input [DATAWIDTH/8 - 1:0] pstrbM,

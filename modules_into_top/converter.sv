@@ -85,7 +85,7 @@ module converter
         pop_A = 1'b0;
         pop_D = 1'b0;
         rresp = 2'b00;
-        //psel = 1'b0;
+       
         if(selWait)begin
             psel = 1'b0;
         end

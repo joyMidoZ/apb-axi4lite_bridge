@@ -18,8 +18,7 @@ module tb_axi4Lite();
     logic [addrWidth-1:0] araddrM;
     logic [2:0] arprotM;
 
-    //localparam int TEST_ITERATIONS = 10;
-    //localparam int randTime;
+    
     axi4lite_transactor axi_dut (clk,rst,i_f.axiSlave,awreadyM,wreadyM,arreadyM,bvalidM,rvalidM,
     brespM,
     rdataM,
@@ -35,7 +34,7 @@ module tb_axi4Lite();
     int randAwready,randWready,randArready,randRready,randBready,randAddr,randData;
     initial begin
 
-         //$randomseed = $time;
+        
         clk <= 0;
         rst <= 0;
         i_f.axiSlave.awvalid <= 0;
@@ -128,7 +127,7 @@ module tb_axi4Lite();
         @(posedge clk);begin
         randAddr = ($urandom_range(0, 9))*10;
         #randAddr;
-        // ???????????? ???????????????????? WRITE
+        //  WRITE
 
         //  handshake addr
         i_f.axiSlave.awvalid <= 1;
@@ -161,7 +160,7 @@ module tb_axi4Lite();
 
                         end
                         //end handshake
-                        // i am motherfucker ha ha
+
                     end
                     end
             end
@@ -188,8 +187,8 @@ module tb_axi4Lite();
                 // handshake data
                 randData = $urandom_range(0, 9)*10;
                 #randData;
-                /*#($urandom_range(10, 40)); 
-                */
+                
+                
                 rvalidM <= 1;
                 rdataM <= $urandom_range(0, 1024);
                 wait((i_f.axiSlave.rready == 1) & (rvalidM == 1)) // handshake!!!

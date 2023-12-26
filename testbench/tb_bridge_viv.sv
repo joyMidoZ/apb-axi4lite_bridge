@@ -41,20 +41,53 @@ module tb_bridge();
 
     initial begin
 
-         
+         //$randomseed = $time;
         clk <= 0;
         rst <= 0;
-        
+
+        dut.rdataM <=0;
+        dut.arreadyM <=0;
+        dut.pselxM <=0;
+        dut.penableM <=0;
+        dut.pwriteM <=0;
+        dut.pstrbM <=0;
+        dut.wreadyM <=0;
+        dut.awreadyM <=0;
+        dut.rvalidM <=0;
+        dut.paddrM <=0;
+        dut.pwdataM <=0;
+        dut.prdataM <=0;
+        dut.empty_A <=0;
+        dut.full_A <=0;
+        dut.empty_D <=0;
+        dut.full_D <=0;
+        dut.empty_D_read <=0;
+        dut.full_D_read <=0;
+        dut.push_D_read <=0;
+        for (int i=0; i<DEPTH; ++i) begin
+            dut.fifo_A.data[i] <=0; 
+        end
+        for (int j=0; j<DEPTH; ++j) begin
+            dut.fifo_D.data[j] <=0;
+        end
+        for (int h=0; h<DEPTH; ++h) begin
+            dut.fifo_D_read.data[h] <=0;
+        end
+
         IF.masterAPB.pready <= 0;
         IF.masterAPB.pslverr <= 0;
-        
+        IF.masterAPB.pselx <= 0;
+        IF.masterAPB.penable <=0;
         IF.masterAPB.prdata <=0;
-        
+        IF.masterAPB.paddr <=0;
+        IF.masterAPB.pwdata <=0;
+        IF.masterAPB.pstrb <=0;
         i_f.axiSlave.araddr <=0;
         i_f.axiSlave.awvalid <= 0;
         i_f.axiSlave.arvalid <= 0;
         i_f.axiSlave.arprot <=0;
-        
+        i_f.axiSlave.rdata <=0;
+        i_f.axiSlave.rresp <= 0;
         i_f.axiSlave.awaddr <= 0;
         i_f.axiSlave.awprot <= 0;
         
@@ -68,7 +101,11 @@ module tb_bridge();
         
         #25;
         rst <= 1;
-        
+        /*
+        #20;
+            test_write();
+        #100;
+            test_write();*/
             
             repeat(100)begin
                 randTestMake = $urandom_range(0,999);
