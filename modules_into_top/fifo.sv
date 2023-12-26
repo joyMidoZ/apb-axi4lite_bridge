@@ -12,9 +12,9 @@ module fifo
   input                pop,
   input  [WIDTH - 1:0] write_data,
 
-  output logic [WIDTH - 1:0] read_data,
-  output               empty,
-  output               full
+  output logic [WIDTH - 1:0]  read_data,
+  output logic                empty,
+  output logic                full
 );
   localparam DEPTH_INCR = DEPTH + 1;
   localparam DEPTH_DINCR = DEPTH - 1;
@@ -26,7 +26,7 @@ module fifo
   logic [POINTER_WIDTH - 1:0] wr_ptr, rd_ptr;
   logic [COUNTER_WIDTH - 1:0] cnt;
 
-  reg [WIDTH - 1:0] data [0: DEPTH_DINCR];
+  logic [WIDTH - 1:0] data [0: DEPTH_DINCR];
 
   //--------------------------------------------------------------------------
 

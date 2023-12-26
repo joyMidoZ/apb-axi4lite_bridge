@@ -186,6 +186,4 @@ fifo fifo_D_read(
     .full       (full_D_read)
     );
 
-
-
 endmodule

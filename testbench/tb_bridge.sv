@@ -1,37 +1,88 @@
 `timescale 1ns/1ps
 module tb_bridge();
-    parameter addrWidth = 32;
-    parameter dataWidth = 32;
+    parameter ADDRWIDTH = 32;
+    parameter DATAWIDTH = 32;
+    parameter DEPTH = 10;
     bit clk,rst;
     always #5 clk = ~clk;
     axi4_Lite i_f();
     apb IF();
-    logic awreadyM,wreadyM,arreadyM,bvalidM,rvalidM;
+    logic awreadyM,
+          wreadyM,
+          arreadyM,
+          bvalidM,
+          rvalidM;
     logic [1:0] brespM;
-    logic [dataWidth-1:0] rdataM;
+    logic [DATAWIDTH-1:0] rdataM;
     logic [1:0] rrespM;
 
-    logic [addrWidth-1:0] awaddrM;
+    logic [ADDRWIDTH-1:0] awaddrM;
     logic [2:0] awprotM;
-    logic [dataWidth-1:0] wdataM;
-    logic [dataWidth/8 - 1:0] wstrbM;
-    logic [addrWidth-1:0] araddrM;
+    logic [DATAWIDTH-1:0] wdataM;
+    logic [DATAWIDTH/8 - 1:0] wstrbM;
+    logic [ADDRWIDTH-1:0] araddrM;
     logic [2:0] arprotM;
-    logic pslverr, pready;
+    logic pslverr,
+          pready;
+    logic [DATAWIDTH-1:0]data [0:DEPTH-1];
+
+
     //localparam int TEST_ITERATIONS = 10;
     //localparam int randTime;
-    top dut (clk,rst,i_f.axiSlave,IF.masterAPB);
+    top dut (clk,
+             rst,
+             i_f.axiSlave,
+             IF.masterAPB);
+
+    
     bit flag = 0;
-    int randAwready,randWready,randArready,randRready,randBready,randAddr,randData,randTestMake,randNum1;
+    int randAwready,randWready,randArready,randRready,
+    randBready,randAddr,randData,randTestMake,randNum1;
+
     initial begin
 
          //$randomseed = $time;
         clk <= 0;
         rst <= 0;
+
+        dut.rdataM <=0;
+        dut.arreadyM <=0;
+        dut.pselxM <=0;
+        dut.penableM <=0;
+        dut.pwriteM <=0;
+        dut.pstrbM <=0;
+        dut.wreadyM <=0;
+        dut.awreadyM <=0;
+        dut.rvalidM <=0;
+        dut.paddrM <=0;
+        dut.pwdataM <=0;
+        dut.prdataM <=0;
+        dut.empty_A <=0;
+        dut.full_A <=0;
+        dut.empty_D <=0;
+        dut.full_D <=0;
+        dut.empty_D_read <=0;
+        dut.full_D_read <=0;
+        dut.push_D_read <=0;
+        for (int i=0; i<DEPTH; ++i) begin
+            dut.fifo_A.data[i] <=0; 
+        end
+        for (int j=0; j<DEPTH; ++j) begin
+            dut.fifo_D.data[j] <=0;
+        end
+        for (int h=0; h<DEPTH; ++h) begin
+            dut.fifo_D_read.data[h] <=0;
+        end
+
         IF.masterAPB.pready <= 0;
         IF.masterAPB.pslverr <= 0;
         IF.masterAPB.pselx <= 0;
         IF.masterAPB.penable <=0;
+        IF.masterAPB.prdata <=0;
+        IF.masterAPB.paddr <=0;
+        IF.masterAPB.pwdata <=0;
+        IF.masterAPB.pstrb <=0;
+        i_f.axiSlave.araddr <=0;
         i_f.axiSlave.awvalid <= 0;
         i_f.axiSlave.arvalid <= 0;
         i_f.axiSlave.arprot <=0;
@@ -147,7 +198,7 @@ module tb_bridge();
         fork
             i_f.axiSlave.wvalid <= 1;
             i_f.axiSlave.wdata <= $urandom_range(0, 1024);
-            i_f.axiSlave.wstrb <= $urandom_range(0, (2**dataWidth)/8-1);  
+            i_f.axiSlave.wstrb <= $urandom_range(0, (2**DATAWIDTH)/8-1);  
                  
         join
         @((i_f.axiSlave.wready == 1) & (i_f.axiSlave.wvalid == 1))
