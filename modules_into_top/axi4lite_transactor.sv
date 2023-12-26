@@ -55,6 +55,9 @@ module  axi4lite_transactor
                 if(axiS.rready&rvalidM) next_state = addr;
                 else next_state = data_r;
             end
+            default:begin
+                next_state = addr;
+            end
         endcase
     end
 

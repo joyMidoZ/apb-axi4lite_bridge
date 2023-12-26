@@ -5,9 +5,9 @@ module converter
     input clk, rst,
 
     //FROM axi
-    input [PROT_LEN-1:0] awprot, 
+    input [PROT_LEN-1:1'b0] awprot, 
                 arprot,
-    input [STROBE_LEN-1:0] wstrb,
+    input [STROBE_LEN-1:1'b0] wstrb,
     input awvalid,
           arvalid,
           wvalid,
@@ -18,7 +18,7 @@ module converter
                  bvalid,
                  arready,
                  rvalid,
-    output logic [RESP_LEN-1:0] bresp, 
+    output logic [RESP_LEN-1:1'b0] bresp, 
                                 rresp,
 
     //FROM apb
@@ -26,11 +26,11 @@ module converter
           pready,
 
     //TO apb
-    output logic [PROT_LEN-1:0] pprot,
+    output logic [PROT_LEN-1:1'b0] pprot,
     output logic psel, 
                  penable,
                  pwrite,  
-    output logic [STROBE_LEN - 1:0] pstrb,
+    output logic [STROBE_LEN - 1:1'b0] pstrb,
 
     //FORM fifo
     input empty_A, 
@@ -51,91 +51,44 @@ module converter
 );
     
 
-    assign awready = (~full_A)?1:0;
-    assign arready = (~full_A)?1:0;
-    assign wready = (~full_A&~full_D)? 1:0;
-    assign bvalid = (pready)?1:0;
+    assign awready = (~full_A)?1'b1:1'b0;
+    assign arready = (~full_A)?1'b1:1'b0;
+    assign wready = (~full_A&~full_D)? 1'b1:1'b0;
+    assign bvalid = (pready)?1'b1:1'b0;
     
     assign bresp = (psel&penable&pslverr)?2'b10:2'b00;
     
-    assign push_A = (~full_A&(awvalid|arvalid))?1:0;
-    //assign pop_A = ((empty_A&wvalid&write)|(empty_A&~write&arvalid)) ? 1 : 0;
-    //assign pop_D = (empty_D&wvalid) ? 1 : 0;
-    assign push_D = (~full_D&wvalid) ? 1 : 0;
-    //assign push_D_read = (~write&pready&~full_D_read) ? 1 : 0;
-    assign pop_D_read = (empty_D_read&rvalid&rready) ? 1 : 0;
+    assign push_A = (~full_A&(awvalid|arvalid))?1'b1:1'b0;
+    //assign pop_A = ((empty_A&wvalid&write)|(empty_A&~write&arvalid)) ? 1'b1 : 1'b0;
+    //assign pop_D = (empty_D&wvalid) ? 1 : 1'b0;
+    assign push_D = (~full_D&wvalid) ? 1'b1 : 1'b0;
+    //assign push_D_read = (~write&pready&~full_D_read) ? 1 : 1'b0;
+    assign pop_D_read = (empty_D_read&rvalid&rready) ? 1'b1 : 1'b0;
 
     logic selWait,preadyREG,write;
     always_ff@(posedge clk or negedge rst)
     begin
-        //pop_A <= 0;
-        //pop_D <= 0;
+        if(~rst)begin
+            selWait <=1'b0;
+        end
+        else begin
+
         preadyREG <= pready;
-        if(awvalid) write <= 1;
-        else if(arvalid) write <= 0;
+        if(awvalid) write <= 1'b1;
+        else if(arvalid) write <= 1'b0;
         else write <= write;
-        if(pready) selWait <= 1;
-        else selWait <= 0;
-    end
-/*
-    always_ff@(posedge clk or negedge rst)
-    begin
-        if(pready) psel <= 0;
-        else 
-        begin
-            if(write)
-                begin
-                    if(wvalid)
-                        begin
-                            psel <= 1;
-                            //pop_A <= 1;
-                            //pop_D <= 1;
-                            pwrite <= 1; 
-                        end
-                    else
-                        begin
-                            psel <= psel;
-                            //pop_A <= pop_A;
-                            //pop_D <= pop_D;
-                            pwrite <= pwrite;
-                        end
-                end
-            else
-                begin
-                    if(pready&~full_D_read)
-                        begin
-                            rvalid <= 1;
-                            psel <=0;
-                            if(~pslverr) begin 
-                                //push_D_read <= 1; 
-                                rresp <= 2'b00;
-                            end
-                            else begin 
-                                //push_D_read <= 0;
-                                rresp <= 2'b10;
-                            end
-                        end
-                    else begin 
-                        rvalid <= 0;
-                        psel <= 1;
-                        //pop_A <= 1;
-                        pwrite <= 0;
-                    end
-                    
-                        
-                    
-                end
+        if(pready) selWait <= 1'b1;
+        else selWait <= 1'b0;
         end
     end
-    */
-    
+
     always_comb begin 
-        pop_A = 0;
-        pop_D = 0;
+        pop_A = 1'b0;
+        pop_D = 1'b0;
         rresp = 2'b00;
-        //psel = 0;
+        //psel = 1'b0;
         if(selWait)begin
-            psel = 0;
+            psel = 1'b0;
         end
 
         else
@@ -144,10 +97,10 @@ module converter
                     begin
                         if(wvalid)
                             begin
-                                psel = 1;
-                                pop_A = 1;
-                                pop_D = 1;
-                                pwrite = 1;
+                                psel = 1'b1;
+                                pop_A = 1'b1;
+                                pop_D = 1'b1;
+                                pwrite = 1'b1;
                             end
 
                         else 
@@ -161,41 +114,47 @@ module converter
                 
                 else
                     begin
-                        psel = 1;
-                        pop_A = 1;
-                        pwrite = 0;
-                        if(pready&~full_D_read)begin
-                            rvalid = 1;
-                            psel = 0;
-                            pop_A = 0;
-                            if(~pslverr) begin 
-                                push_D_read = 1; 
-                                rresp = 2'b00;
+                        if(~rst)begin
+                            psel = 1'b0;
+                            pop_A = 1'b0;
+                        end
+                        else
+                        begin
+                            psel = 1'b1;
+                            pop_A = 1'b1;
+                            pwrite = 1'b0;
+                            if(pready&~full_D_read)begin
+                                rvalid = 1'b1;
+                                psel = 1'b0;
+                                pop_A = 1'b0;
+                                if(~pslverr) begin 
+                                    push_D_read = 1'b1; 
+                                    rresp = 2'b00;
+                                end
+                                else begin 
+                                    push_D_read = 1'b0;
+                                    rresp = 2'b10;
+                                end
                             end
                             else begin 
-                                push_D_read = 0;
-                                rresp = 2'b10;
-                            end
+                                rvalid = 1'b0;
+                                push_D_read = push_D_read;
+                                rresp = rresp;
+                            end 
                         end
-                        else begin 
-                            rvalid = 0;
-                            push_D_read = push_D_read;
-                            rresp = rresp;
-                        end 
-                            
                     end
                 /*
                 if(~awvalid&arvalid) begin
                     psel = 1;
                     pop_A = 1;
-                    pwrite = 0;
+                    pwrite = 1'b0;
                 end
 
                 else 
                     begin
-                        psel = 0;
-                        pop_A = 0;
-                        pwrite = 0;
+                        psel = 1'b0;
+                        pop_A = 1'b0;
+                        pwrite = 1'b0;
                     end
                 */
             end
@@ -207,7 +166,7 @@ module converter
 
 
 
- typedef enum logic [1:0] { idle, setup, access } fsmStr;
+ typedef enum logic [1'b1:1'b0] { idle, setup, access } fsmStr;
     fsmStr state,next_state;
     always_ff @(posedge clk or negedge rst) begin
         if(~rst)
@@ -235,6 +194,9 @@ module converter
                 else if (preadyREG & ~psel) next_state = idle;
                 else next_state = access;
             end
+            default: begin
+                next_state = idle;
+            end
         endcase
     end
     always_comb begin
@@ -243,27 +205,14 @@ module converter
         case (state)
 
             idle:begin
-                if(psel) penable = 0;
+                if(psel) penable = 1'b0;
                 else penable = penable;
 
             end
             setup:begin
-                penable = 1;
+                penable = 1'b1;
             end
-            access:begin
-      /*
-                if(~pwrite)
-                begin
-                    if(pready&~full_D_read) begin 
-                        push_D_read = 1; 
-                        rvalid = 1;
-                    end
-                    else begin 
-                        push_D_read = 0;
-                        rvalid = 0;
-                    end
-                end*/
-            end
+            
         endcase
     end
 
