@@ -59,10 +59,9 @@ module converter
     assign bresp = (psel&penable&pslverr)?2'b10:2'b00;
     
     assign push_A = (~full_A&(awvalid|arvalid))?1'b1:1'b0;
-    //assign pop_A = ((empty_A&wvalid&write)|(empty_A&~write&arvalid)) ? 1'b1 : 1'b0;
-    //assign pop_D = (empty_D&wvalid) ? 1 : 1'b0;
+
     assign push_D = (~full_D&wvalid) ? 1'b1 : 1'b0;
-    //assign push_D_read = (~write&pready&~full_D_read) ? 1 : 1'b0;
+
     assign pop_D_read = (empty_D_read&rvalid&rready) ? 1'b1 : 1'b0;
 
     logic selWait,preadyREG,write;
@@ -120,9 +119,16 @@ module converter
                         end
                         else
                         begin
+                            if(arvalid)begin
                             psel = 1'b1;
                             pop_A = 1'b1;
                             pwrite = 1'b0;
+                            end
+                            else begin
+                            psel = psel;
+                            pop_A = pop_A;
+                            pwrite = pwrite;
+                            end
                             if(pready&~full_D_read)begin
                                 rvalid = 1'b1;
                                 psel = 1'b0;
@@ -143,20 +149,7 @@ module converter
                             end 
                         end
                     end
-                /*
-                if(~awvalid&arvalid) begin
-                    psel = 1;
-                    pop_A = 1;
-                    pwrite = 1'b0;
-                end
 
-                else 
-                    begin
-                        psel = 1'b0;
-                        pop_A = 1'b0;
-                        pwrite = 1'b0;
-                    end
-                */
             end
         
     end

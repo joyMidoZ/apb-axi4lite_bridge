@@ -13,14 +13,7 @@ module apbComb #(parameter DATAWIDTH = 32, ADDRWIDTH = 32)
     output logic preadyM,
     output logic [DATAWIDTH-1:0]prdataM
 );
-    /*
-    assign apbM.pselx = pselxM;
-    assign apbM.paddr = pselxM? paddrM: apbM.paddr;
-    assign apbM.pwdata = pselxM? pwdataM: apbM.pwdata;
-    assign apbM.penable = (pselxM&~apbM.pready|~apbM.penable)? 0:1;
-    assign apbM.pwrite = pwriteM;
-    assign preadyM = (apbM.penable)? apbM.pready:preadyM;
-    */
+    
     assign apbM.pselx = pselxM;
     assign apbM.paddr = paddrM;
     assign apbM.pwdata = pwdataM;

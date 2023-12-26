@@ -44,22 +44,13 @@ module fifo
             rd_ptr <= rd_ptr == max_ptr ? '0 : rd_ptr +1'b1;
   //--------------------------------------------------------------------------
 
-/*  always @ (posedge clk)
-  begin
-    if (push)
-      data [wr_ptr] <= write_data;
-    
-    
-    end
-*/
+
     always_comb begin 
       data [wr_ptr] = (push)? write_data:data[wr_ptr];
       read_data =(pop)?data[rd_ptr]:read_data;
     end
 
-    //always @ (posedge clk)
-    //if(pop) read_data <= data[rd_ptr];    
-  //assign read_data = data [rd_ptr];
+
 
   //--------------------------------------------------------------------------
 
@@ -70,6 +61,7 @@ module fifo
       cnt <= cnt + 1'b1;
     else if (pop & ~ push)
       cnt <= cnt - 1'b1;
+    
 
   //--------------------------------------------------------------------------
 
